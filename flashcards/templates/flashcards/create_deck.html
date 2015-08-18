@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %} Новая колода {% endblock %}
+
+{% block navigation %}
+	{{ block.super }}
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<form action="#" method="post" class="form-horizontal">
+				{% csrf_token %}
+				<fieldset>
+				<legend>Колода</legend>
+				<div class="form-group">
+					<label for="name" class="col-lg-2 control-label"> Название </label>
+					<input type="text" id="name" class="col-lg-8" name="name" placeholder="Должно быть уникальным"> 
+				</div>
+				<hr>
+				<div class="non-default">
+					<div class="list_in_create_deck form-group"> Интервалы между повторениями: <span class="repeat_color" id="defaul_intervals"> сразу, 20 minuits, 8 hours, 24 hours, 3 days, 7 days, 1 month<sup> ∞</sup> </span> <span class="repeat_color" id="input_intervals"></span> </div>
+					{% for i in "xxxxxxxxxxxxx" %}
+						
+						<div id="repition_{{forloop.counter}}">
+							{% if forloop.counter != 13 %}
+								<div class="form-group rep_inputs">
+									<div class="col-lg-3" style="padding-right: 0px;">	
+										<label for="months" class="col-lg-6 control-label">Месяцев</label>
+										<input type="number" name="months" class="col-lg-6 inp_time" id="m{{forloop.counter}}" i="{{forloop.counter}}"  value="0">
+									</div>
+									<div class="col-lg-9" style="padding-left: 0px;">
+										<label for="days" class="col-lg-2 control-label">Дней</label>
+										<input type="number" name="days" class="col-lg-2 inp_time" id="d{{forloop.counter}}" i="{{forloop.counter}}" value="0">
+										<label for="hours" class="col-lg-2 control-label">Часов</label>
+										<input type="number" name="hours" class="col-lg-2 inp_time" id="h{{forloop.counter}}" i="{{forloop.counter}}" value="0">
+										<label for="minuits" class="col-lg-2 control-label">Минут</label>
+										<input type="number" name="minuits" class="col-lg-2 inp_time" id="mi{{forloop.counter}}" i="{{forloop.counter}}" value="0">
+									</div>
+								</div>	
+							{% endif %}
+							<div class="form-group">
+								<button type="button" class="col-md-3 btn btn-info add_repition" i="{{forloop.counter}}" id="forward_repition_{{forloop.counter}}">Добавить повторение</button>
+								<button type="button" class="col-md-3 btn btn-default back_repition" i="{{forloop.counter}}" id="back_repition_{{forloop.counter}}">Вернуться к пердыдущему</button>
+
+								<button type="button" class="col-md-2 btn btn-default btn_rep rep_reset "> Сбросить </button>
+								<div class="add_repition_text to_default"> <a >По умолчанию</a> </div>
+
+								
+							</div>
+
+						</div>
+					{% endfor %}
+					<hr>
+					<div class="form-group">
+
+						<button type="button" class="btn btn-primary btn_create col-md-3"> Создать </button>
+						<div class="col-md-5 col-md-offset-3"><span id="error_in_name" class="glyphicon glyphicon-remove" style="color: red; display: none;"></span> <span id="error_text"> </span> </div>
+					</div>
+
+					
+				</div>	
+				</fieldset>
+		</div>
+	</div>
+
+<script>
+
+$(document).ready(function(){
+	var rep_text = []
+
+	function sort_time(a, b){
+		a = a.split(' ');
+		b = b.split(' ');
+		if (a[0] == "сразу"){
+			a[0] = 0;
+			a.push(0);
+		}
+
+		if (a[1] == "months"){
+			a[1] = 4;
+		}
+		if (a[1] == "days"){
+			a[1] = 3;
+		}
+		if (a[1] == "hours"){
+			a[1] = 2;
+		}
+		if (a[1] == "minuits"){
+			a[1] = 1;
+		}
+		if (b[0] == "сразу"){
+			b[0] = 0;
+			b.push(0);
+		}
+		if (b[1] == "months"){
+			b[1] = 4;
+		}
+		if (b[1] == "days"){
+			b[1] = 3;
+		}
+		if (b[1] == "hours"){
+			b[1] = 2;
+		}
+		if (b[1] == "minuits"){
+			b[1] = 1;
+		}
+
+		if (a[1] > b[1]){
+			return 1;
+		}
+		else if (a[1] < b[1]){
+			return -1;
+		}
+		else{
+			if (a[0] > b[0]){
+				return 1;
+			}
+			else if(a[0] < b[0]){
+				return -1;
+			}
+			else{
+				return 0;
+			}
+		}
+
+	}
+
+
+
+	$(".inp_time").change(function(){
+		var i_elem = ($(this).attr("i"));
+		if ($("#m" + i_elem).val() < 0){
+			$("#m" + i_elem).val(0);
+		}
+		if ($("#d" + i_elem).val() < 0){
+			$("#d" + i_elem).val(0);
+		}
+		if ($("#h" + i_elem).val() < 0){
+			$("#h" + i_elem).val(0);
+		}
+		if ($("#mi" + i_elem).val() < 0){
+			$("#mi" + i_elem).val(0);
+		}
+
+		if ($("#m" + i_elem).val() != 0){
+			$("#d" + i_elem).prop('disabled', true);
+			$("#h" + i_elem).prop('disabled', true);
+			$("#mi" + i_elem).prop('disabled', true);
+		}
+		if ($("#d" + i_elem).val() != 0){
+			$("#m" + i_elem).prop('disabled', true);
+			$("#h" + i_elem).prop('disabled', true);
+			$("#mi" + i_elem).prop('disabled', true);
+		}
+		if ($("#h" + i_elem).val() != 0){
+			$("#d" + i_elem).prop('disabled', true);
+			$("#m" + i_elem).prop('disabled', true);
+			$("#mi" + i_elem).prop('disabled', true);
+		}
+		if ($("#mi" + i_elem).val() != 0){
+			$("#d" + i_elem).prop('disabled', true);
+			$("#h" + i_elem).prop('disabled', true);
+			$("#m" + i_elem).prop('disabled', true);
+		}
+
+		if ($("#m" + i_elem).val() == 0 && $("#d" + i_elem).val() == 0 && $("#h" + i_elem).val() == 0 && $("#mi" + i_elem).val() == 0){
+			$("#m" + i_elem).prop('disabled', false);
+			$("#d" + i_elem).prop('disabled', false);
+			$("#h" + i_elem).prop('disabled', false);
+			$("#mi" + i_elem).prop('disabled', false);
+		}
+	}); 
+	
+
+
+	$("#change").click(function(){
+		$(".default").hide();
+		$(".non-default").show();
+		$("#repition_1").show();
+
+	});
+	
+	$(".add_repition").click(function(){
+		var i_elem = ($(this).attr("i"))
+		if ($("#m" + i_elem).val() != 0){
+			rep_text.push($("#m" + i_elem).val() + " months");
+		}else if ($("#d" + i_elem).val() != 0){
+			rep_text.push($("#d" + i_elem).val() + " days");
+		}else if ($("#h" + i_elem).val() != 0){
+			rep_text.push($("#h" + i_elem).val() + " hours");
+		}else if ($("#mi" + i_elem).val() != 0){
+			rep_text.push($("#mi" + i_elem).val() + " minuits");
+		}else{
+			rep_text.push("сразу")
+		}
+
+		rep_text.sort(sort_time);
+
+		$("#repition_" + i_elem).hide()
+		$("#repition_" + (+i_elem + 1)).show()
+
+
+		var ar_to_str = "";
+		for(var i = 0; i < rep_text.length; i++){
+			if (i != rep_text.length - 1){
+				ar_to_str += rep_text[i] + ", ";
+			}
+			else{
+				ar_to_str += rep_text[i] + "<sup> ∞</sup>";
+			}
+
+		}
+		$("#input_intervals").html(ar_to_str);
+
+	});
+
+	$(".back_repition").click(function(){
+		$("#repition_" + ($(this).attr("i"))).hide();
+		$("#repition_" + (+($(this).attr("i")) - 1)).show();
+		rep_text.pop();
+		rep_text.sort(sort_time);
+		var ar_to_str = "";
+		for(var i = 0; i < rep_text.length; i++){
+			if (i != rep_text.length - 1){
+				ar_to_str += rep_text[i] + ", ";
+			}
+			else{
+				ar_to_str += rep_text[i] + "<sup> ∞</sup>";
+			}
+		}
+		$("#input_intervals").html(ar_to_str);
+	});
+/*	$("#btn_show").click(function(){
+		$(this).hide();
+		$("#form").show(); 
+		$("#answer_study").show();
+	});*/
+	$(".to_default").click(function(){
+/*		for(var i = 0; i < 12; i++){
+			$("#repition_" + (i + 1)).hide();
+		}*/
+		$(".to_default").hide();
+		$(".add_repition").hide();
+		$(".back_repition").hide();
+		$(".rep_inputs").hide();
+		$("#input_intervals").hide();
+		$("#defaul_intervals").show();
+		$(".rep_reset").show();
+		rep_text = [];
+	});
+
+	$(".rep_reset").click(function(){
+
+		$(".to_default").show();
+		$(".add_repition").show();
+		$(".back_repition").show();
+
+		$("#back_repition_1").hide();
+		$("#forward_repition_13").hide();
+
+		for(var i = 1; i <= 13; i++){
+			if (i == 1){
+				$("#repition_" + i).show();
+			}
+			else{
+				$("#repition_" + i).hide();
+			}
+
+			if (i != 13){
+				$("#m" + i).val(0);
+				$("#d" + i).val(0);
+				$("#h" + i).val(0);
+				$("#mi" + i).val(0);
+
+				$("#m" + i).prop("disabled", false);
+				$("#d" + i).prop("disabled", false);
+				$("#h" + i).prop("disabled", false);
+				$("#mi" + i).prop("disabled", false);
+
+
+			}
+		}
+
+		$(".rep_inputs").show();
+		$("#defaul_intervals").hide();
+		$("#input_intervals").show();
+
+		rep_text = [];
+		$("#input_intervals").html("");
+	});
+
+	$(".btn_create").click(function(){
+		if (rep_text.length == 0){
+			$(".to_default").click();
+		}
+		if ($("#name").val()){
+			$(".btn_create").html('Выполняем...');
+			$.ajax({
+				type: "POST",
+				url: "{% url 'create_deck' %}",
+				data:  {	csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+							"name": $("#name").val(),
+							"times": rep_text,
+							 
+					},
+				success: function(){window.location.href = "{% url 'deck_choice' %}";},
+				error: function() {
+					$("#error_in_name").show();
+					$("#error_text").html("Колода с таким названием существует");
+					$(".btn_create").html('Создать');
+				},
+			
+			});
+		}else{
+			$("#error_in_name").show();
+			$("#error_text").html("Нет названия")
+
+		}
+	});
+
+	$("#name").focus(function(){
+		$("#error_in_name").hide();
+		$("#error_text").html("");
+	});
+
+	
+});
+</script>
+{% endblock %}

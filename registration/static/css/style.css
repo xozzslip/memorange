@@ -1,0 +1,126 @@
+.error_message{
+	color: #333333;
+}
+.error_message__hr{
+	margin: 4px 0 10px 0;
+}
+.repeat_color{
+	color: #008cba;
+}
+.question_sign{
+	float: right;
+	color: #008cba;
+}
+.float_right{
+	float: right;
+	font-size: 12px;
+}
+#form{
+	display: none; 
+}
+#answer_study{
+	display: none;
+}
+.add_panel{
+	line-height: 3.8;
+	text-align: center;
+	font-size: 30px;
+}
+.list_in_create_deck{
+	padding-left: 20px;
+}
+
+/*  */
+/* Create_deck */
+#defaul_intervals{
+	display: none;
+}
+#repition_1{
+
+}
+#repition_2{
+	display: none;
+}
+#repition_3{
+	display: none;
+}
+#repition_4{
+	display: none;
+}
+#repition_5{
+	display: none;
+}
+#repition_6{
+	display: none;
+}
+#repition_7{
+	display: none;
+}
+#repition_8{
+	display: none;
+}
+#repition_9{
+	display: none;
+}
+#repition_10{
+	display: none;
+}
+#repition_11{
+	display: none;
+}
+#repition_12{
+	display: none;
+}
+#repition_13{
+	display: none;
+}
+ #back_repition_1{
+ 	display: none;
+ }
+ #forward_repition_13{
+ 	display: none;
+ }
+
+.add_repition{
+	font-size: 10px;
+	padding: 6px;
+	margin-top: 16px;
+	margin-left: 18px;
+}
+.back_repition{
+	font-size: 10px;
+	padding: 6px;
+	margin-left: 16px;
+	margin-top: 16px;
+}
+.add_repition_text{
+	float: right;
+	font-size: 10px;
+	padding: 6px;
+	margin-top: 16px;
+	cursor: pointer;
+}
+.btn_rep{
+	font-size: 10px;
+	padding: 6px;
+	margin-left: 16px;
+	margin-top: 16px;
+}
+.btn_create{
+	margin-left: 18px;
+}
+
+
+
+
+/*--------------------------------  */
+
+/*  */
+/* Registration */
+
+.error_messages {
+	display: none;
+}
+
+
+

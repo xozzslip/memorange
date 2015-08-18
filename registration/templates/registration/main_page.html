@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %} Login {% endblock %}
+
+{% block navigation %}
+	<ul class="nav navbar-nav">
+		<li><a class="active" href="#">О проекте</a></li>
+		<li><a href="#">Блог</a></li>
+	</ul>
+	<ul class="nav navbar-nav navbar-right">
+		<li><a href="{% url 'registration' %}">Регистрация</a></li>
+	</ul>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-4 col-md-offset-4">
+    <form class="form-horizontal" action="{% url 'login_view' %}" method="post">
+        {% csrf_token %}
+        <fieldset>
+
+          <legend>Вход</legend>
+
+          <div class="form-group">
+              <label for="inputEmail" class="col-lg-2 control-label">Email</label>
+              <div class="col-lg-10">
+                <input type="text" class="form-control" id="inputEmail" placeholder="Email" name="e-mail">
+              </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password" class="col-lg-2 control-label">Password</label>
+            <div class="col-lg-10">
+              <input type="password" class="form-control" id="inputEmail" placeholder="Password" name="password">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-lg-10 col-lg-offset-2">
+              <button type="reset" class="btn btn-default">Cancel</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
+
+          </fieldset>
+      </form>
+		{% if messages %}
+			<div class="error_message">
+				<hr class="error_message__hr">
+		    {% for message in messages %}
+		  		<span class="glyphicon glyphicon-ban-circle"> </span> {{ message }}
+		  	{% endfor %}
+	    </div>
+   	{% endif %}
+  </div>
+</div>
+
+
+
+{% endblock %}

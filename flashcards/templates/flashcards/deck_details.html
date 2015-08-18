@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %} Колоды {% endblock %}
+
+{% block navigation %}
+	{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-5 col-md-offset-1">
+		<form action="{% url 'add_question' deck_slug %}" method="post">
+			<fieldset>
+			<legend>{{deck}}</legend>
+			{% csrf_token %}
+			<p><label for="question" class="col-lg-2 control-label">Вопрос</label>
+			 <textarea rows="2" cols="40" name='question' placeholder='Передняя сторона карточки' id='question' class="form-control"></textarea>   </p>
+			<p> <label for="answer" class="col-lg-2 control-label">Ответ</label>
+			<textarea rows="10" cols="40" name='answer' placeholder='Оборотная сторона карточки' id='answer' class="form-control"></textarea>   </p>
+	
+			<p> 
+			<button type="submit" class="btn btn-primary">Добавить</button>
+			<button type="reset" class="btn btn-default">Очистить</button>
+			</p>
+			</fieldset>
+		</form>
+	</div>
+	<div class="col-md-5">
+		<br>
+		{% if question_list %}
+	    	{% load key_variable %}
+			{% for question in question_list %}
+				<div class="panel panel-default">
+  					<div class="panel-heading"> {{question.question_text}} 
+  					<a href=# class="question_sign"> <span class="glyphicon glyphicon-pencil"></span></a>
+  					</div> 
+					<!-- List group -->
+					<ul class="list-group">
+						<li class="list-group-item"> Ответ
+						<a href=# class="question_sign"> <span class="glyphicon glyphicon-eye-open"></span></a>
+						</li>
+						<li class="list-group-item">
+							{% with time_left=next_repeat_time|key_variable:question.id|time_format %} 
+								{% if time_left != 0 and time_left != 1 %} 
+									Повторить через <span class="repeat_color">{{time_left}}</span>
+								{% elif time_left == 0 %}
+									<span class="repeat_color">Пора</span>
+								{% elif time_left == 1 %}
+									<span class="repeat_color">Колода завершена</span>
+								{% endif %}
+							{% endwith %}
+							<a href=# class="question_sign"> Сбросить <span class="glyphicon glyphicon-refresh"></span></a>
+						</li>
+					</ul>
+				</div>
+			{% endfor %}
+		{% else %}
+			<p> В этой колоде нет карточек </p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}
