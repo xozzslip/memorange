@@ -7,5 +7,5 @@
   <li>studing cards</li>
   <li>adding new flashcards with information for study</li>
   <li>adding decks with own intervals between repition</li>
-  <li>ogin and registration new users</li>
+  <li>login and registration new users</li>
   </ul>
