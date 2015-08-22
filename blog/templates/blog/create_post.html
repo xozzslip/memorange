@@ -1,0 +1,359 @@
+{% extends "blog/post_list.html" %}
+
+{% block title %}
+	Новая запись
+ {% endblock %}
+
+{% block navigation %}
+	{{ block.super }}
+{% endblock %}
+
+{% block content %}
+{% if user.is_staff %}
+<form action="">
+{% csrf_token %}
+<fieldset>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+			<div class="panel panel-default">
+				<div class="panel-body">
+				
+					<div class="post_name">
+				
+					
+					<legend>
+						{% if post.name %} 	
+							{{post.name}} 
+							<span id="delete_post" class="glyphicon glyphicon-trash"></span> 
+							<span id="hidden_post" class="glyphicon glyphicon-eye-close"></span>
+						{% else %} 
+							Новая запись 
+						{% endif %}
+					</legend>
+					
+					<p><label for="name_of_post" class="col-lg-2 control-label">Название</label>
+					 {% autoescape off %}<input type="text" name='name_of_post'id='post_heading' class="form-control"></input>{% endautoescape %}  </p> 
+	
+
+			
+		
+					</div>
+					<div class="post_body">
+					<p>
+					<div class="col-md-2">
+					 <span class="glyphicon glyphicon-bold redactor_btn" id="bold"></span>
+					<span class="glyphicon glyphicon-italic redactor_btn" id="italic"></span> 
+					</div>
+
+					<div class="col-md-3">
+					<span class="glyphicon glyphicon-indent-left redactor_btn" id="p"></span>
+					<span class="glyphicon glyphicon-align-justify redactor_btn" id="header"> </span>
+					<span class="glyphicon glyphicon-list-alt redactor_btn" id="list"></span> 
+					<span class="glyphicon glyphicon-plus redactor_btn redactor_btn_plus" id="add_li" style="font-size:13px;"></span>
+					</div>
+
+					
+					</div>
+					<div class="col-md-3">
+						<span class="glyphicon glyphicon-picture redactor_btn" id="pic"></span> 
+						<span class="glyphicon glyphicon-link redactor_btn" id="link" ></span>
+					</div>
+					</p>
+					{% autoescape off %}<p><textarea rows="10" placeholder='Ваш способ использования интервальных повторений' id='post_body' class="form-control"></textarea>  </p> {% endautoescape %}
+					</div>
+
+				</div>
+			
+
+			<hr class="dotted_hr">
+			<div class=" out_put_panel">
+				<div class="" ><a name="preview" href="#preview"><h1 id="post_heading_preview"> </h1> </a></div>
+				<div class="" id="output">
+			
+				</div>
+			</div>
+			<hr class="dotted_hr">
+			{% if post %}
+			<button type="button" id="save_changes_post" class="btn btn-primary">Сохранить изменения </button>
+			{% else %}
+			<button type="button" id="create_post" class="btn btn-primary">Отправить на модерацию </button>
+			{% endif %}
+		</div>
+	</div>
+					</fieldset>
+				</form>
+
+
+
+<script>
+	$(document).ready(function(){
+
+
+		// $("#post_body").change(function(){
+
+		// 	document.location.href = "#preview";
+		// });
+	function setSelectionRange(input, selectionStart, selectionEnd) {
+	  if (input.setSelectionRange) {
+	    input.focus();
+	    input.setSelectionRange(selectionStart, selectionEnd);
+	  }
+	  else if (input.createTextRange) {
+	    var range = input.createTextRange();
+	    range.collapse(true);
+	    range.moveEnd('character', selectionEnd);
+	    range.moveStart('character', selectionStart);
+	    range.select();
+	  }
+	}
+
+	function setCaretToPos (input, pos) {
+	  setSelectionRange(input, pos, pos);
+	}
+	function insertAtCaret(areaId,text,delta_pos) {
+	    var txtarea = document.getElementById(areaId);
+	    var scrollPos = txtarea.scrollTop;
+	    var strPos = 0;
+	    var br = ((txtarea.selectionStart || txtarea.selectionStart == '0') ? 
+	        "ff" : (document.selection ? "ie" : false ) );
+	    if (br == "ie") { 
+	        txtarea.focus();
+	        var range = document.selection.createRange();
+	        range.moveStart ('character', -txtarea.value.length);
+	        strPos = range.text.length;
+	    }
+	    else if (br == "ff") strPos = txtarea.selectionStart;
+
+	    var front = (txtarea.value).substring(0,strPos);  
+	    var back = (txtarea.value).substring(strPos,txtarea.value.length); 
+	    txtarea.value=front+text+back;
+	    strPos = strPos + delta_pos ;
+	    if (br == "ie") { 
+	        txtarea.focus();
+	        var range = document.selection.createRange();
+	        range.moveStart ('character', -txtarea.value.length);
+	        range.moveStart ('character', strPos);
+	        range.moveEnd ('character', 0);
+	        range.select();
+	    }
+	    else if (br == "ff") {
+	        txtarea.selectionStart = strPos;
+	        txtarea.selectionEnd = strPos;
+	        txtarea.focus();
+	    }
+	    txtarea.scrollTop = scrollPos;
+	}
+
+	$("#post_body").on('change keyup paste', function() {
+		val_heading = $("#post_heading").val();
+			var text = $("#post_body").val();
+			$("#output").html(text);
+			$(".out_put_panel").show();
+			$(".dotted_hr").show();
+			$("#post_heading_preview").text(val_heading);
+
+		if (!val_heading && !$(this).val()){
+			$(".out_put_panel").hide();
+			$(".dotted_hr").hide();	
+		}
+		if (text.substr(text.length - 5) == "</ul>"){
+			$("#add_li").show();
+		}
+		else{
+			$("#add_li").hide();
+		}
+	});
+
+	$("#post_heading").on('change keyup paste', function() {
+		var text = $("#post_body").val();
+		
+			$("#output").html(text);
+			$(".out_put_panel").show();
+			$(".dotted_hr").show();
+			$("#post_heading_preview").text($("#post_heading").val());
+		
+		if (!$("#post_heading").val() && !$("#post_body").val()){
+			$(".out_put_panel").hide();
+			$(".dotted_hr").hide();	
+		}
+
+	});
+
+
+	var tags = {
+		"bold": "<b></b>",
+		"italic": "<i></i>",
+		"header": "<h3></h3>",
+		"list": "<ul>\n    <li></li>    \n</ul>",
+		"p": "<p></p>",
+		"add_li": "\n    <li></li>    \n"
+	}
+	function add_tag(tag, inlinetag){
+
+		$("#"+tag).click(function(){
+			var new_val;
+			insertAtCaret('post_body',tags[tag], Math.floor((tags[tag].length - 1)/2) )
+			middle_of_tag = Math.floor(tags[tag].length/2) + 1
+			// setCaretToPos(document.getElementById("post_body"), new_val.length - middle_of_tag);
+			$("#post_body").trigger("change");
+	});
+	}
+	add_tag("bold")
+	add_tag("italic")
+	add_tag("header")
+	add_tag("p")
+	add_tag("list")
+
+
+		$("#add_li").click(function(){
+			var new_val;
+			$("#post_body").val(function(i, val) {
+				new_val = val.substr(0, val.length - 6) + tags["add_li"] + val.substr(val.length - 5, val.length - 1);
+				   return new_val
+			});
+			middle_of_tag = Math.floor(tags["add_li"].length/2) + 1
+			setCaretToPos(document.getElementById("post_body"), new_val.length - middle_of_tag - 5);
+			$("#post_body").trigger("change");
+	});
+
+	$("#pic").click(function(){
+		var src = prompt("Введите 'URL' картинки", "http://");
+		if (src != "http://" && src != null && src != ''){
+			image_tag = '<image src="' + src + '" align=left>'
+			insertAtCaret('post_body',image_tag, image_tag.length )
+			$("#post_body").trigger("change");
+		}
+	})
+	$("#link").click(function(){
+		var link = prompt("Введите 'URL' ссылки", "http://");
+		if (link != "http://" && link != null && link != ''){
+			var name = prompt("Введите название ссылки");
+			a_tag = '<a target="_blank" href="' + link + '">' + name + '</a>';
+			insertAtCaret('post_body',a_tag, a_tag.length )
+			$("#post_body").trigger("change");
+		}
+	})
+
+
+	$("#create_post").click(function(){
+		if ($("#post_heading").val() && $("#post_body").val()){
+			$("#create_post").html('Выполняем...');
+			$.ajax({
+				type: "POST",
+				url: "{% url 'create_post' %}",
+				data:  {	csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+							"post_head": $("#post_heading").val(),
+							"post_body": $("#post_body").val(),
+							"delete": "false",
+							"change": "false",
+							"for_view_change": "false",
+					},
+				success: function(){window.location.href = "{% url 'all_posts' %}";},
+				error: function() {
+					$("#create_post").html('Отправить на модерацию');
+				},
+			
+			});
+		}else{
+			alert("Оба поля являются обязательными");
+
+		}
+	});
+	{% if post %}
+	if (parseHTML("{{post.text}}")){
+		$("#post_body").val(parseHTML("{{post.text}}"));
+		$("#post_body").trigger("change");
+	}
+
+	if (parseHTML("{{post.name}}")){
+		$("#post_heading").val(parseHTML("{{post.name}}"));
+		$("#post_heading").trigger("change");
+	}
+	
+	$("#delete_post").click(function(){
+		if(confirm("Вы уверены, что хотите удалить этот пост?")){
+			$("#create_post").html('Выполняем...');
+			$.ajax({
+				type: "POST",
+				url: "{% url 'create_post' %}",
+				data:  {	csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+							"delete": "true",
+							"change": "false",
+							"post_id": {{post.pk}},	
+							"for_view_change": "false",	
+							},
+				success: function(){window.location.href = "{% url 'all_posts' %}";},
+				error: function() {
+					$("#create_post").html('Отправить');
+				},
+			
+			});
+
+
+		}
+	});
+
+
+	
+	$("#save_changes_post").click(function(){
+		if ($("#post_heading").val() && $("#post_body").val()){
+			$("#save_changes_post").html('Выполняем...');
+			$.ajax({
+				type: "POST",
+				url: "{% url 'create_post' %}",
+				data:  {	csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+							"post_head": $("#post_heading").val(),
+							"post_body": $("#post_body").val(),
+							"post_id": {{post.pk}},
+							"change": "true",
+							"delete": "false",
+							"for_view_change": "false",
+							 
+					},
+				success: function(){window.location.href = "{% url 'all_posts' %}";},
+				error: function() {
+					$("#save_changes_post").html('Сохранить изменения');
+				},
+			
+			});
+		}else{
+			alert("Оба поля являются обязательными");
+
+		}
+	});
+	
+	if ("{{post.for_view}}" == "true"){
+		$("#hidden_post").removeClass("glyphicon-eye-close");
+		$("#hidden_post").addClass("glyphicon-eye-open");
+	}
+	else{
+		$("#hidden_post").removeClass("glyphicon-eye-open");
+		$("#hidden_post").addClass("glyphicon-eye-close");
+
+	}
+	$("#hidden_post").click(function(){
+		if ("{{post.for_view}}" == "false"){
+			$("#hidden_post").removeClass("glyphicon-eye-close");
+			$("#hidden_post").addClass("glyphicon-eye-open");	
+		}	
+		else{
+			$("#hidden_post").addClass("glyphicon-eye-close");
+			$("#hidden_post").removeClass("glyphicon-eye-open");
+		}
+		$.ajax({
+			type: "POST",
+			url: "{% url 'create_post' %}",
+			data:  {	csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+							"post_id": {{post.pk}},
+							"change": "false",
+							"delete": "false",
+							"for_view_change": "true",
+							 
+			},
+		});
+	});
+	{% endif %}
+	});
+</script>
+{% endif %}
+{% endblock %}

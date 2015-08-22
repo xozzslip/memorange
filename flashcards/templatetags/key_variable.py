@@ -54,3 +54,11 @@ def even_odd_partition(value, even_or_odd):
 	elif even_or_odd == 'odd':
 		return odd_partition
 
+@register.filter
+def is_last_word_too_long(value):
+	THE_LONGEST_WORD = 40 #count of symbols
+	words = value.split(' ')
+	if len(words[-1]) > THE_LONGEST_WORD:
+		dif = len(words[-1]) - THE_LONGEST_WORD
+		return value[:len(value) - dif] + '...'
+	return value

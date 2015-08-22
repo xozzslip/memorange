@@ -1,0 +1,48 @@
+{% extends "blog/post_list.html" %}
+
+{% block title %}
+	{{post.name}}
+ {% endblock %}
+
+{% block navigation %}
+	{{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="row">
+	
+	
+	<div class="col-md-9 col-md-offset-0" >
+		{% if post.for_view == "true" or user.is_stuff %}
+			{% autoescape off %}
+				<div class="txt_al"><a><h1> {{post.name}} </h1></a></div>
+					<p>{{post.text}}</p>
+			{% endautoescape %}
+		{% else %}
+			Статья находится на модерации.
+		{% endif %}
+	</div>
+
+		<div class="col-md-3">
+		<div class="sidebar-module">
+
+          <h4>Интересное</h4>
+            <ol class="list-unstyled">
+            {% for post in post_list %}
+            	{% if post.for_view == "true" or user.is_stuff %}
+              <li><p><a href="{% url 'post' post.slug %}">{{post.name}}</a></p></li>
+              	{% endif %}
+            {% endfor %}
+            </ol>
+            <hr>
+            <a class="link_black"  href="{% url 'all_posts' %}"><h6 class="arrow-left"> <span class="glyphicon glyphicon-arrow-left arrow-left"> </span> </h6></a>
+          </div>
+		</div>
+
+</div>
+
+
+{% endblock %}

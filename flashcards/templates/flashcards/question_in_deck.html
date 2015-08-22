@@ -13,16 +13,20 @@
 	<div class="col-md-6 col-md-offset-3">
 	{% if question %}
 	<div class="panel panel-default">
-		<div class="panel-heading" style="height: 4em; overflow-y: scroll;">{{ question.question_text }}</div>
-		<div class="panel-body" style="height: 14em; overflow-y: scroll;"> <span id="answer_study">{{ question.answer_text }} </span> </div>
+		<div class="panel-heading" id="panel_for_question" style="height: 4em; overflow-y: scroll;">{{ question.question_text }}</div>
+		<div class="panel-body" id="panel_for_answer" style="height: 14em; overflow-y: scroll;"> <span id="answer_study">{{ question.answer_text }} </span> </div>
 	</div>	
-	<button type="button" class="btn btn-info" id="btn_show"> Показать </button>
-	<form action="{% url 'remember' question_id=question.id deck_slug=question.deck.slug %}" method="post" id="form">
+	<button type="button" class="btn btn-info col-md-3" id="btn_show"> Показать </button>
+	<form method="post" id="form">
 	    {% csrf_token %}
-	    <button type="submit" class="btn btn-primary" value="True" name="remember"> Помню </button>
-	    <button type="submit" class="btn btn-default" value="False" name="remember"> Не помню </button>
+	    <button type="button" class="btn btn-primary col-md-3 remember_btn" id="rem" value="True" name="remember"> Помню </button>
+	    <button type="button" class="btn btn-default col-md-3 remember_btn" id="not_rem" value="False" name="remember"> Не помню </button>
+	    <button type="button" class="btn btn-default col-md-3 remember_btn" id="bad_rem" value="bad" name="remember"> Помню плохо </button>
    </form>
+   {% else %}
+   		В колоде пока нет достпных карточек
    {% endif %}
+   <span id="quest_doesnot_exist"></span>
 	</div>
 </div>
 <!-- 
@@ -39,6 +43,98 @@ $(document).ready(function(){
 		$("#form").show();
 		$("#answer_study").show();
 	});
+	document.onkeydown = keydown;
+	document.onkeyup = keyup;
+	function keydown(e) {
+
+	    e = e || window.event;
+
+	    if (e.keyCode == '32' || e.keyCode=='49' || e.keyCode=='97' || e.keyCode=='35') {
+	        if ($("#rem").is(":visible")){
+	        	$("#rem").removeClass('btn-info')
+	        	$("#rem").addClass('btn_inf_active')
+	        }
+	        else{
+	        	$("#btn_show").removeClass('btn-primary')
+	        	$("#btn_show").addClass('btn_prim_active')
+	        }
+	    }
+	    else if (e.keyCode == '50' || e.keyCode=='98' || e.keyCode=='40') {
+	       if ($("#not_rem").is(":visible")){
+	       		$("#not_rem").addClass('btn_def_active')
+	       }
+	    }
+	    else if (e.keyCode == '51' || e.keyCode=='99' || e.keyCode=='34') {
+	     	       if ($("#bad_rem").is(":visible")){
+	       		$("#bad_rem").addClass('btn_def_active')
+	       }
+	    }
+
+	}
+	function keyup(e){
+	    e = e || window.event;
+
+	    if (e.keyCode == '32' || e.keyCode=='49' || e.keyCode=='97' || e.keyCode=='35') {
+	        if ($("#rem").is(":visible")){
+	        	$("#rem").click()
+	        }
+	        else{
+	        	
+	        	$("#btn_show").click()
+	        }
+	    }
+	    else if (e.keyCode == '50' || e.keyCode=='98' || e.keyCode=='40') {
+	       if ($("#not_rem").is(":visible")){
+	       		$("#not_rem").click()
+	       }
+	    }
+	    else if (e.keyCode == '51' || e.keyCode=='99' || e.keyCode=='34	') {
+	     	       if ($("#bad_rem").is(":visible")){
+	       		$("#bad_rem").click()
+	       }
+	    }		
+	}
+	{% if question %}
+	var question_id = {{question.pk}};
+	$("#rem").click(function(){apply_btn_click($(this).attr("value"))})
+	$("#not_rem").click(function(){apply_btn_click($(this).attr("value"))})
+	$("#bad_rem").click(function(){apply_btn_click($(this).attr("value"))})
+	function apply_btn_click(value_for_post){
+		$.ajax({
+			type: "POST",
+			url: "{% url 'remember' deck_slug=question.deck.slug %}", 
+			data:{
+				csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+				'remember': value_for_post,
+				'question_id': question_id
+			},
+			success: function(data){
+				question_id = data["question_id"];
+				var question_text = data["question_text"]
+				var answer_text = data["answer_text"]
+				var deck_is_empty = data["deck_is_empty"]
+				if (deck_is_empty == "false"){
+					$("#btn_show").show();
+					$("#form").hide();
+					$("#answer_study").hide();
+					$("#panel_for_question").html(question_text)
+					$("#panel_for_answer").html(answer_text)
+		        	$("#rem").addClass('btn-info')
+	        		$("#rem").removeClass('btn_inf_active')
+	  			    $("#btn_show").addClass('btn-primary')
+	      		  	$("#btn_show").removeClass('btn_prim_active')
+	      		  	$("#not_rem").removeClass('btn_def_active')
+	      		  	$("#bad_rem").removeClass('btn_def_active')
+				}
+				else{
+					$("#quest_doesnot_exist").html("Доступные карточки кончились");
+					$(".panel").hide();
+					$(".remember_btn").hide();
+				}
+			},
+		});
+	};
+	{% endif %}
 });
 </script>
 {% endblock %}

@@ -17,10 +17,10 @@
 		    	<div class="col-md-5 col-md-offset-1">
 		    		{% for deck in deck_list|even_odd_partition:'even' %}
 					<div class="panel panel-default">
-		  				<div class="panel-heading"> <a href={% url 'question_in_deck' deck.slug %}><span class="glyphicon glyphicon-th-large"> </span> {{ deck.deck_name }}</a> </div>
+		  				<div class="panel-heading">{{  deck.deck_name|is_last_word_too_long }}</a> <a class="btn-study" href="{% url 'question_in_deck' deck.slug %}" ><span class="glyphicon glyphicon-play"> </span> Учить </a> </div>
 						<ul class="list-group">
 							<li class="list-group-item"> Повторить  <span class="repeat_color">{{repeat_time_question|key_variable:deck.id}} </span>карт{{repeat_time_question|key_variable:deck.id|card_plural_rus}}  </li>
-							<li class="list-group-item"><a href={% url 'deck_details' deck.slug %}> <span class="glyphicon glyphicon-plus"> </span> Редактировать </a> </li>
+							<li class="list-group-item"><a href={% url 'deck_details' deck.slug %}> <span class="glyphicon glyphicon-plus"> </span> Добавить карточки </a> </li>
 						</ul>
 					</div>
 					{% endfor %}
@@ -31,6 +31,7 @@
 						</div>
 					</a> 
 					{% endif %}
+
 				</div>
 
 	
@@ -38,10 +39,10 @@
 		    		{% for deck in deck_list|even_odd_partition:'odd' %}
 					<div class="panel panel-default">
 
-		  				<div class="panel-heading"> <a href={% url 'question_in_deck' deck.slug %}><span class="glyphicon glyphicon-th-large"> </span> {{ deck.deck_name }}</a> </div>
+		  				<div class="panel-heading">{{ deck.deck_name|is_last_word_too_long }}</a> <a class="btn-study" href="{% url 'question_in_deck' deck.slug %}" ><span class="glyphicon glyphicon-play"> </span> Учить </a> </div>
 						<ul class="list-group">
 							<li class="list-group-item"> Повторить  <span class="repeat_color">{{repeat_time_question|key_variable:deck.id}} </span>карт{{repeat_time_question|key_variable:deck.id|card_plural_rus}}  </li>
-							<li class="list-group-item"><a href={% url 'deck_details' deck.slug %}> <span class="glyphicon glyphicon-plus"> </span> Редактировать </a> </li>
+							<li class="list-group-item"><a href={% url 'deck_details' deck.slug %}> <span class="glyphicon glyphicon-plus"> </span> Добавить карточки </a> </li>
 						</ul>
 					</div>
 					{% endfor %}
@@ -51,6 +52,13 @@
 							  <div class="add_panel"> <span class="glyphicon glyphicon-plus"> </span>  </div>
 						</div>
 					</a> 
+					{% endif %}
+					{% if not deck_list %}
+						<a href="{% url 'create_deck' %}">
+							<div class="panel panel-default">
+								  <div class="add_panel"> <span class="glyphicon glyphicon-plus"> </span>  </div>
+							</div>
+						</a> 
 					{% endif %}
 				</div>
 			</div>

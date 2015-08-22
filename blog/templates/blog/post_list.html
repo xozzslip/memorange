@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}
+	 Блог
+ {% endblock %}
+
+{% block navigation %}
+	{% if user.is_authenticated %}
+		<ul class="nav navbar-nav">
+			<li><a href="{% url 'deck_choice' %}">Колоды</a></li>
+			<li><a href="{% url 'all_posts' %}">Блог</a></li>
+			{% if user.is_staff %}<li><a href="{% url 'create_post' %}"><span class="glyphicon glyphicon-pencil"></span></a></li>{% endif %}
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li><a class="active" href="{% url 'post' post_slug='about' %}">О проекте</a></li>
+			<li><a href="{% url 'logout_view' %}">Выход</a></li>
+		</ul>
+	{% else %}
+		<ul class="nav navbar-nav">
+			<li><a href = "{% url 'all_posts' %}">Блог</a></li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li><a class="active" href="{% url 'post' post_slug='about' %}">О проекте</a></li>
+			<li><a href="{% url 'main_page' %}">Вход</a></li>
+		</ul>
+	{% endif %}
+{% endblock %}
+
+
+{% block content %}
+
+{% load section_of_string %}
+
+<div class="row">
+	
+	
+	<div class="col-md-7 col-md-offset-1" >
+	{% autoescape off %}
+	{% for post in post_list %}
+		{% if user.is_staff %}
+			<div>
+			<h2 >
+			<a href="{% url 'post' post.slug %}"> {{post.name}} </a>  
+				{% if post.owner == user %} 
+					<a href="{% url 'edit_post' post.slug  %}"><span class="edit__post_btn glyphicon glyphicon-pencil"></span></a>
+					{% if post.for_view == "false" %} <span class="edit__post_btn glyphicon glyphicon-eye-close"></span> {%endif%}
+				{% endif %}  
+			<div class="post_information">
+
+				<span  class="glyphicon glyphicon-heart-empty"></span> {{post.likes}}
+			</div>  
+			</h2>
+			</div>
+			<div class="panel-body">
+				{{post.text|section:1000}} <a class="read_forward" href="{% url 'post' post.slug %}"> Читать дальше <span class="glyphicon glyphicon-arrow-right read_forward_icon"></span> </a>
+			</div>
+			<div class="author_and_date">
+				<span class="pad_betw_auth_and_time">
+					{{post.owner}}
+				</span>
+				<span class="pad_betw_auth_and_time">
+					{{post.pub_date}}
+
+				</span>
+			</div>
+			<hr class="hr_between_post">
+		{% else %}
+			{% if post.for_view == "true" %}
+				<div>
+				<h2 >
+				<a href="{% url 'post' post.slug %}"> {{post.name}} </a>  
+					{% if post.owner == user %} 
+						<a href="{% url 'edit_post' post.slug  %}"><span class="edit__post_btn glyphicon glyphicon-pencil"></span></a>
+					{% endif %}  
+				<div class="post_information">
+
+					<span  class="glyphicon glyphicon-heart-empty"></span> {{post.likes}}
+				</div>  
+				</h2>
+				</div>
+				<div class="panel-body">
+					{{post.text|section:1000}} <a class="read_forward" href="{% url 'post' post.slug %}"> Читать дальше <span class="glyphicon glyphicon-arrow-right read_forward_icon"></span> </a>
+				</div>
+				<div class="author_and_date">
+					<span class="pad_betw_auth_and_time">
+						{{post.owner}}
+					</span>
+					<span class="pad_betw_auth_and_time">
+						{{post.pub_date}}
+					</span>
+				</div>
+				<hr class="hr_between_post">
+			{% endif %}
+		{% endif %}
+	{% endfor %}
+	{% endautoescape %}
+	</div>
+	
+
+	
+
+	<div class="col-md-3">
+		<div class="sidebar-module">
+            <h4>Интересное</h4>
+            <ol class="list-unstyled">
+            {% for post in post_list %}
+            	{% if post.for_view == "true" %}
+              <li><p><a href="{% url 'post' post.slug %}">{{post.name}}</a></p></li>
+              	{% endif %}
+            {% endfor %}
+            </ol>
+
+          </div>
+
+	</div>
+</div>
+
+
+{% endblock %}

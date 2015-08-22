@@ -33,7 +33,9 @@ def registration_view(request):
 	if request.method == "POST":
 		username = request.POST["e-mail"]
 		password = request.POST["password"]
-		user = User(username=username, password=password)
+		user = User(username=username)
+		user.save()
+		user.set_password(password)
 		user.save()
 		return HttpResponse('OK')
 	else:

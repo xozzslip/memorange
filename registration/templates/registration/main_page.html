@@ -4,8 +4,8 @@
 
 {% block navigation %}
 	<ul class="nav navbar-nav">
-		<li><a class="active" href="#">О проекте</a></li>
-		<li><a href="#">Блог</a></li>
+		<li><a class="active" href="{% url 'post' post_slug='about' %}">О проекте</a></li>
+		<li><a href="{% url 'all_posts' %}">Блог</a></li>
 	</ul>
 	<ul class="nav navbar-nav navbar-right">
 		<li><a href="{% url 'registration' %}">Регистрация</a></li>

@@ -1,3 +1,71 @@
+
+body {
+  padding-bottom: 50px;
+}
+/*  */
+/* post_list.html */
+
+.link_black{
+	color: inherit;
+}
+.link_black:hover{
+	color: inherit;
+}
+.arrow-left{
+	font-size: 24px;
+	text-align: center;
+}
+.white_back{
+	background-color: white;
+
+}
+.white_back_div{
+	background-color: white;
+	height: 11px;
+
+}
+.margin_none{
+	margin: 0px;
+}
+.btn_prim_active{
+	background-color: #1AA1CA;
+  border-color: #204d74;
+}
+.btn_def_active{
+  background-color: #d4d4d4;
+  border-color: #8c8c8c;
+ }
+ .btn_inf_active{
+ 	background-color:#286090;
+ }
+ .post_information{
+ 	display: block;
+ 	font-size:  20px;
+ 	color: #CA1A66;
+ 	float: right;
+ 	margin-right: 20px;
+ 	padding-top: 5px;
+ }
+.edit__post_btn{
+	font-size:  16px;
+}
+.author_and_date{
+	font-size: 10px;
+	color: gray;
+}
+.hr_between_post{
+	margin-top: 4px;
+}
+.pad_betw_auth_and_time{
+	padding-left: 5px;
+}
+
+/*-----------*/
+
+.remember_btn{
+	margin-right: 5px;
+}
+
 .error_message{
 	color: #333333;
 }
@@ -10,6 +78,10 @@
 .question_sign{
 	float: right;
 	color: #008cba;
+}
+.question_sign:hover{
+	color: #2200FF;
+	cursor: pointer;
 }
 .float_right{
 	float: right;
@@ -28,6 +100,24 @@
 }
 .list_in_create_deck{
 	padding-left: 20px;
+}
+.btn-study{
+	float: right;
+/*	margin-bottom: 0;
+	margin-top: -11px;
+	font-size: 16px;
+	height: 43px;
+	margin-right: -16px;
+	width: 124px;*/
+}
+#save_question_btn{
+	display: none;
+}
+#cancel_question_btn{
+	display: none;
+}
+.btn-marg{
+	margin-right: 6px;
 }
 
 /*  */
@@ -124,3 +214,58 @@
 
 
 
+/* */
+/* Blog preview */
+.out_put_panel{
+	display: none;
+}
+.dotted_hr{
+	border:none;
+  border-top:1px dotted #dddddd;
+  color: black;
+  height:1px;
+  width:100%;
+  display: none;
+}
+.redactor_btn{
+	font-size: 22px;
+
+}
+.redactor_btn:hover{
+	color: #008cba;
+	cursor: pointer;
+}
+.redactor_btn_plus{
+	font-family: 13px;
+}
+#add_li{
+	display: none;
+}
+
+.txt_al{
+	text-align: center;
+}
+.read_forward{
+	font-size: 12px;
+}
+.read_forward_icon{
+	font-size: 8px;
+}
+#delete_post{
+	float:right;
+	color: #B52D2D;
+}
+#delete_post:hover{
+	color: #D21B1B;
+	cursor: pointer;
+}
+#hidden_post{
+	float:right;
+
+}
+#hidden_post:hover{
+	color: #06769F;
+	cursor: pointer;
+}
+
+/*--------------*/

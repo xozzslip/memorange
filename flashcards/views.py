@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.utils import timezone
@@ -69,38 +69,55 @@ def question_in_deck(request, deck_slug):
 					view_q.append(question)
 		random.shuffle(view_q)
 		view_q = sorted(view_q, key=lambda x: x.repition_number)
-		if view_q:
-			question = view_q[0]
+
+		NUMBERS_FOR_CHOICE = 3
+
+		if len(view_q) >= NUMBERS_FOR_CHOICE:
+			question = view_q[random.randint(0, NUMBERS_FOR_CHOICE - 1)]
+		elif view_q:
+			question=view_q[random.randint(0, len(view_q) - 1)]
 		else:
 			question = False
-		context = {'question':question, 'q_list':view_q}
-		return render(request, 'flashcards/question_in_deck.html', context)
+		
+		if request.is_ajax():
+			deck_is_empty = "false"
+			if len(view_q) == 0:
+				deck_is_empty = "true"
+				context = {'question_text':"", 'answer_text':"", "question_id":"", "deck_is_empty": deck_is_empty}
+			else:
+				context = {'question_text': question.question_text, 'answer_text': question.answer_text, "question_id": question.id, "deck_is_empty": deck_is_empty}
+			return JsonResponse(context)
+		else:
+			context = {'question':question, 'q_list':view_q}
+			return render(request, 'flashcards/question_in_deck.html', context)
 	else: 
 		return HttpResponse('Войдите в свой профиль')
 
 
 @login_required
-def remember(request, question_id, deck_slug):
+def remember(request, deck_slug):
 	if request.user.is_authenticated():
+		question_id = request.POST["question_id"]
 		question = get_object_or_404(Question, pk=question_id)
-		try:
-			remember = request.POST['remember']
-		except (KeyError):
-			return HttpResponse('Ошибка выбора')	
-		else:
-			if remember == 'True':
-				question.repition_number += 1
+		remember = request.POST['remember']
+		if remember == 'True':
+			question.repition_number += 1
+			question.last_repeat = timezone.now()	
+			question.save()
+		elif remember == 'False':
+			question.repition_number = 0
+			question.last_repeat = timezone.now()
+			question.save() 
+		elif remember == 'bad':
+			if question.repition_number > 0:
+				question.repition_number -= 1
 				question.last_repeat = timezone.now()
 				question.save()
-				return HttpResponseRedirect(reverse('question_in_deck', args=(deck_slug,)))
-			elif remember == 'False':
-				question.repition_number = 0
-				question.last_repeat = timezone.now()
-				question.save() 
-				return HttpResponseRedirect(reverse('question_in_deck', args=(deck_slug,)))
 			else:
-				return HttpResponse('Че?')
-	else: 
+				question.last_repeat = timezone.now()
+				question.save()				
+		return HttpResponseRedirect(reverse('question_in_deck', args=(deck_slug,)))
+	else:
 		return HttpResponse('Войдите в свой профиль')
 
 @login_required
@@ -151,3 +168,11 @@ def create_deck(request):
 	else:	
 		return render(request, 'flashcards/create_deck.html')
 
+def edit_question(request):
+	if request.method == "POST":
+		question_id = int(request.POST["question_id"])
+		q = Question.objects.get(pk=question_id)
+		q.question_text = request.POST["question_text"]
+		q.answer_text = request.POST["answer_text"]
+		q.save()
+		return HttpResponse("Ok")

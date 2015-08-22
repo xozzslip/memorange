@@ -19,8 +19,11 @@
 			<textarea rows="10" cols="40" name='answer' placeholder='Оборотная сторона карточки' id='answer' class="form-control"></textarea>   </p>
 	
 			<p> 
-			<button type="submit" class="btn btn-primary">Добавить</button>
-			<button type="reset" class="btn btn-default">Очистить</button>
+			<button type="submit" id="add_question_btn" class="btn btn-marg btn-primary col-sm-3">Добавить</button>
+			<button type="button" id="save_question_btn" class="btn btn-marg btn-primary col-sm-3">Сохранить</button>
+			<button type="reset" class="btn btn-marg btn-default col-sm-3">Очистить</button>
+			<button type="button" id="cancel_question_btn" class="btn btn-marg btn-default col-sm-3">Отменить</button>
+
 			</p>
 			</fieldset>
 		</form>
@@ -32,12 +35,12 @@
 			{% for question in question_list %}
 				<div class="panel panel-default">
   					<div class="panel-heading"> {{question.question_text}} 
-  					<a href=# class="question_sign"> <span class="glyphicon glyphicon-pencil"></span></a>
+  					<a q_id="{{question.id}}" q_text="{{question.question_text}}" q_answ="{{question.answer_text}}" class="question_sign edit"> <span class="glyphicon glyphicon-pencil"></span></a>
   					</div> 
 					<!-- List group -->
 					<ul class="list-group">
-						<li class="list-group-item"> Ответ
-						<a href=# class="question_sign"> <span class="glyphicon glyphicon-eye-open"></span></a>
+						<li class="list-group-item"> <span id="show_ans_{{forloop.counter}}_span">Ответ</span>
+						<a id="show_ans_{{forloop.counter}}" is_opened="false" class="question_sign show_ans" q_answ="{{question.answer_text}}" > <span class="glyphicon glyphicon-eye-open"></span></a>
 						</li>
 						<li class="list-group-item">
 							{% with time_left=next_repeat_time|key_variable:question.id|time_format %} 
@@ -49,7 +52,7 @@
 									<span class="repeat_color">Колода завершена</span>
 								{% endif %}
 							{% endwith %}
-							<a href=# class="question_sign"> Сбросить <span class="glyphicon glyphicon-refresh"></span></a>
+							<a class="question_sign"> Сбросить <span class="glyphicon glyphicon-refresh"></span></a>
 						</li>
 					</ul>
 				</div>
@@ -59,4 +62,60 @@
 		{% endif %}
 	</div>
 </div>
+
+<script>
+	var question_id;
+	$(document).ready(function(){
+
+		$(".edit").click(function(){
+			question_id = ($(this).attr("q_id"))	
+			$("#question").val($(this).attr("q_text"))
+			$("#answer").val($(this).attr("q_answ"))
+			$("#add_question_btn").hide()
+			$("#save_question_btn").show()
+			$("#cancel_question_btn").show()
+		});
+
+		$(".show_ans").click(function(){
+			var id = $(this).attr("id")
+			var is_opened = $(this).attr("is_opened")
+			if (is_opened == "false"){
+				$("#" + id + "_span").html($(this).attr("q_answ"))
+				$(this).attr("is_opened", "true")
+			}
+			else{
+				$("#" + id + "_span").html("Ответ")
+				$(this).attr("is_opened", "false")
+			}
+
+
+		});
+	
+		$("#cancel_question_btn").click(function(){
+			$("#question").val("")
+			$("#answer").val("")
+			$("#add_question_btn").show()
+			$("#save_question_btn").hide()
+			$("#cancel_question_btn").hide()		
+		});
+
+		$("#save_question_btn").click(function(){
+			$("#save_question_btn").html("Выполняем...")
+			$.ajax({
+				type: "POST",
+				url: "{% url 'edit_question' %}", 
+				data:{
+					csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+					"question_id": question_id,
+					"question_text": $("#question").val(),
+					"answer_text": $("#answer").val(),
+				},
+				success: function(){
+					location.reload();
+				},
+			});
+		});
+
+	});
+</script>
 {% endblock %}
